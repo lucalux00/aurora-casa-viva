@@ -1,0 +1,76 @@
+AURORA CASA VIVA - LICENSE / LICENZA
+Copyright (c) 2026 DomotikPro.it (Luca Pinelli). All rights reserved. / Tutti i diritti riservati.
+
+ENGLISH
+
+1. Grant. You are granted a free, personal, non-exclusive, non-transferable,
+   revocable license to download and use the unmodified software in your own
+   home, for personal and non-commercial purposes.
+
+2. Configuration allowed. You may edit the example YAML files (for example
+   scheda-esempio.yaml and the code produced by the editor) to configure the card for
+   your own entities. This is the intended use and is not a modification of the
+   software.
+
+3. Not allowed, without prior written permission from the author:
+   a. modifying, adapting, translating or creating derivative works of the
+      software (including aurora-casa-viva.js, acv-demo.js and the editor);
+   b. redistributing, republishing, sharing, selling, renting or sublicensing
+      the software or any part of it, in original or modified form, including
+      mirrors, forks published elsewhere (except as required by the GitHub
+      Terms of Service), bundles and templates;
+   c. commercial use, or including it in any paid product, service or
+      installation for third parties;
+   d. removing or altering copyright notices or links to https://domotikpro.it;
+   e. reverse engineering to extract the artwork or code for reuse.
+
+4. Linking. You may freely link to the repository and to
+   https://domotikpro.it/progetti/aurora-casa-viva, and show screenshots in
+   reviews or tutorials with credit to DomotikPro.it.
+
+5. No warranty. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+   EXPRESS OR IMPLIED. TO THE MAXIMUM EXTENT PERMITTED BY LAW THE AUTHOR IS NOT
+   LIABLE FOR ANY CLAIM, DAMAGE, DATA LOSS OR OTHER LIABILITY ARISING FROM ITS
+   USE. You use it at your own risk and are responsible for backing up your
+   Home Assistant configuration.
+
+6. Termination. The license ends automatically if you breach these terms.
+
+7. Contact for permissions: richieste@domotikpro.it
+
+ITALIANO
+
+1. Concessione. Ti e' concessa una licenza gratuita, personale, non esclusiva,
+   non trasferibile e revocabile per scaricare e usare il software non
+   modificato nella tua casa, per scopi personali e non commerciali.
+
+2. Configurazione consentita. Puoi modificare i file YAML di esempio (ad
+   esempio scheda-esempio.yaml e il codice prodotto dall'editor) per configurare la
+   scheda con le tue entita'. E' l'uso previsto e non e' una modifica del
+   software.
+
+3. Non consentito, senza permesso scritto dell'autore:
+   a. modificare, adattare, tradurre o creare opere derivate del software
+      (compresi aurora-casa-viva.js, acv-demo.js e l'editor);
+   b. ridistribuire, ripubblicare, condividere, vendere, noleggiare o
+      sublicenziare il software o sue parti, in forma originale o modificata,
+      compresi mirror, fork pubblicati altrove (salvo quanto previsto dai
+      Termini di servizio di GitHub), pacchetti e modelli;
+   c. uso commerciale, o inclusione in prodotti, servizi o installazioni a
+      pagamento per terzi;
+   d. rimuovere o alterare le note di copyright o i link a
+      https://domotikpro.it;
+   e. decompilare o estrarre grafica e codice per riutilizzarli.
+
+4. Link. Puoi linkare liberamente il repository e la pagina
+   https://domotikpro.it/progetti/aurora-casa-viva e mostrare schermate in
+   recensioni o tutorial citando DomotikPro.it.
+
+5. Nessuna garanzia. IL SOFTWARE E' FORNITO "COSI' COM'E'", SENZA GARANZIE DI
+   ALCUN TIPO. NEI LIMITI DI LEGGE L'AUTORE NON RISPONDE DI DANNI, PERDITA DI
+   DATI O ALTRE RESPONSABILITA' DERIVANTI DAL SUO USO. Lo usi a tuo rischio ed
+   e' tua responsabilita' fare il backup della configurazione di Home Assistant.
+
+6. Cessazione. La licenza termina automaticamente in caso di violazione.
+
+7. Richieste di permesso: richieste@domotikpro.it

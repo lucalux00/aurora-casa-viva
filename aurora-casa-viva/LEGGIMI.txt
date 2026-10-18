@@ -1,0 +1,100 @@
+AURORA CASA VIVA per Home Assistant
+====================================
+La piantina di casa che vive: la luce del sole entra davvero dalle finestre,
+la macchina del tempo fa rivivere le ultime 24 ore, la scia di presenza segue
+chi passa da una stanza all'altra. In piu': radar di presenza, mappa di calore,
+consumi in euro per stanza, bidoni della differenziata, campanello con foto,
+tocco per accendere le luci e uno Short verticale registrato con un pulsante.
+
+GUIDA COMPLETA CON SCHERMATE: https://domotikpro.it/progetti/aurora-casa-viva
+ANTEPRIMA DAL VIVO (dati finti): https://domotikpro.it/aurora-casa-viva-demo/index.html
+EDITOR ONLINE: https://domotikpro.it/aurora-casa-viva-editor/index.html
+
+CONTENUTO
+  LEGGIMI.txt                               questo file
+  LICENSE.txt                               licenza d'uso
+  scheda-esempio.yaml                       una casa di esempio, completa
+  www/aurora-casa-viva/aurora-casa-viva.js  la scheda (un solo file)
+  editor/index.html                         l'editor "Disegna la tua pianta"
+                                            (si apre anche senza internet)
+
+PASSI (circa 30 minuti, quasi tutti per disegnare la pianta)
+1) DISEGNA LA PIANTA
+   Apri l'editor (online o editor/index.html), carica una foto o un PNG della
+   pianta, segna una misura con lo strumento Scala, disegna le stanze, poi
+   finestre, ingresso e passaggi. Nella scheda Casa scegli il nord.
+   Clicca ogni stanza e scrivi le entita' di luce, movimento e temperatura.
+   Nella scheda Codice premi "Copia la scheda".
+   L'immagine resta nel tuo browser: non viene inviata a nessuno.
+
+2) COPIA LA SCHEDA IN HOME ASSISTANT
+   Metti la cartella  www/aurora-casa-viva  dentro la cartella  www  di
+   Home Assistant (File editor, Samba o Studio Code Server). Risultato:
+       www/aurora-casa-viva/aurora-casa-viva.js
+   Nel File editor la cartella di configurazione si chiama /homeassistant.
+   Se www e' nuova, riavvia Home Assistant una volta.
+   Prova: apri  <indirizzo di Home Assistant>/local/aurora-casa-viva/aurora-casa-viva.js
+   nel browser: se vedi del testo, e' tutto a posto.
+
+3) AGGIUNGI LA RISORSA
+   Profilo -> attiva "Modalita' avanzata".
+   Impostazioni -> Plance -> menu (tre puntini) -> Risorse -> Aggiungi risorsa
+       URL:   /local/aurora-casa-viva/aurora-casa-viva.js?v=1
+       Tipo:  Modulo JavaScript
+   Quando aggiorni la scheda, alza il numero dopo ?v=
+
+4) INCOLLA LA SCHEDA
+   Apri una plancia -> matita -> Aggiungi scheda -> Manuale -> incolla quello
+   che hai copiato dall'editor -> Salva. In una plancia a sezioni dai alla
+   sezione la larghezza piena: la piantina ha bisogno di spazio.
+
+5) PROVA
+   - Trascina la barra in basso: e' la macchina del tempo sulle ultime 24 ore.
+   - Tocca una stanza: accende o spegne la sua luce. Tieni premuto: dettagli.
+   - Calore, Consumi e Short sono nella barra in basso.
+
+OPZIONI UTILI
+  north         gradi di cui il nord e' ruotato rispetto all'alto del disegno
+  px_per_meter  scala del disegno (la calcola l'editor con lo strumento Scala)
+  tariff        quanto paghi un kWh, in euro
+  tap_action    toggle (tocco = luce) oppure details (tocco = dettagli)
+  heatmap       true per avere la mappa di calore accesa all'avvio
+  thermal       true per colorare le stanze secondo la temperatura
+  fonts         false per non caricare i font Google (nessuna richiesta esterna)
+  layers        per spegnere un effetto, per esempio:
+                  layers: { energy: false, sound: false }
+                (sun, presence, energy, air, sound, security, weather)
+  short         titolo e scritte dello Short, per esempio:
+                  short: { title: "24 ore di casa mia", seconds: 24 }
+  waste         raccolta differenziata: entity (sensore con cosa portare
+                fuori stasera), attribute (se e' una lista), from_time o from
+                (ora del promemoria; i bidoni compaiono 2 ore prima)
+  doorbell      spioncino o campanello: image (immagine dell'ultimo evento),
+                event_type (tipo di evento), camera (si apre toccando la foto)
+  radars        radar di presenza LD2450 (posizione delle persone, per
+                esempio Apollo MTR-1) o LD2410 (distanza, per esempio MSR-2)
+
+PRIVACY
+  Tutto funziona in locale. La scheda legge gli stati e lo storico delle
+  ultime 24 ore dalla tua Home Assistant e non invia dati a nessuno.
+  L'unica richiesta esterna sono i font Google (Manrope, Sora): con
+  fonts: false non c'e' nessuna richiesta esterna.
+  Lo Short viene registrato nel browser e scaricato sul tuo dispositivo:
+  prima di pubblicarlo guardalo, perche' mostra la pianta e gli orari di casa.
+
+SE QUALCOSA NON VA
+ - Scheda rossa "Custom element doesn't exist": controlla la risorsa e
+   ricarica con Ctrl+F5.
+ - La piantina e' vuota o le stanze sono spostate: ricontrolla il codice
+   copiato dall'editor (deve iniziare con  type: custom:aurora-casa-viva).
+ - Il sole entra dalle finestre sbagliate: cambia "north" (o il nord
+   nell'editor) finche' la mattina il sole entra da est.
+ - La scia salta tra stanze lontane: mancano dei passaggi; aggiungili
+   nell'editor con lo strumento Passaggio.
+ - Stanza con "OFFLINE": uno dei suoi sensori non risponde (batteria,
+   rete Zigbee, Wi-Fi). La scheda te lo segnala, il resto continua a funzionare.
+ - Lo Short non parte: serve un browser recente (Chrome, Edge, Safari 18)
+   e la scheda deve restare visibile mentre registra.
+
+Provata con Home Assistant 2026.10. Domande e suggerimenti: richieste@domotikpro.it
+(c) 2026 DomotikPro.it - vedi LICENSE.txt

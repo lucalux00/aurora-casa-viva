@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, follow">
+<title>Disegna la tua pianta · Aurora Casa Viva</title>
+<meta name="description" content="Editor gratuito per disegnare la pianta di casa e ottenere la configurazione della scheda Aurora Casa Viva per Home Assistant. Funziona nel browser, niente viene inviato.">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+:root{--bg:#05080f;--panel:rgba(255,255,255,.045);--line:rgba(255,255,255,.11);--text:#E8ECF8;--muted:#A3AECB;--cyan:#22D3EE;--violet:#8B7CF8;--amber:#FFC069;--red:#FF8A95}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Manrope,system-ui,sans-serif;font-size:14px;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--cyan)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:34px;height:34px;border-radius:10px;background:conic-gradient(from 210deg,#7C6CF5,#22D3EE,#FFC069,#7C6CF5);flex:none}
+h1{font-family:Sora,Manrope,sans-serif;font-size:17px;margin:0;font-weight:600}
+.sub{font-size:12px;color:var(--muted);margin:2px 0 0}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:rgba(255,255,255,.05);border-radius:10px;padding:0 12px;min-height:36px;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--text);white-space:nowrap}
+.btn:hover{background:rgba(255,255,255,.09)}
+.btn.main{border-color:rgba(34,211,238,.6);background:rgba(34,211,238,.16)}
+.btn.on{border-color:rgba(255,192,105,.7);background:rgba(255,192,105,.16)}
+.btn.danger{border-color:rgba(255,138,149,.5);color:#FFC2C8}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;height:calc(100vh - 62px);min-height:560px}
+.stagecol{display:flex;flex-direction:column;min-width:0;border-right:1px solid var(--line)}
+.tools{display:flex;gap:6px;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--line)}
+.tool{border:1px solid var(--line);background:transparent;border-radius:10px;padding:0 11px;min-height:34px;cursor:pointer;font-size:13px;color:var(--muted)}
+.tool[aria-pressed="true"]{color:var(--text);border-color:rgba(34,211,238,.6);background:rgba(34,211,238,.14)}
+.stage{position:relative;flex:1;min-height:0;overflow:hidden;background:#070b16}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.drop{position:absolute;inset:16px;border:2px dashed rgba(255,255,255,.14);border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:20px;color:var(--muted);pointer-events:none}
+.drop b{color:var(--text);font-size:16px}
+.drop[hidden]{display:none}
+.drop .btn{pointer-events:auto}
+.hint{padding:9px 12px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);min-height:40px}
+.hint b{color:var(--amber)}
+.zoom{position:absolute;right:12px;bottom:12px;display:flex;gap:6px}
+.side{display:flex;flex-direction:column;min-height:0}
+.tabs{display:flex;border-bottom:1px solid var(--line)}
+.tabs button{flex:1;background:none;border:0;border-bottom:2px solid transparent;padding:12px 6px;cursor:pointer;color:var(--muted);font-size:13px}
+.tabs button[aria-selected="true"]{color:var(--text);border-bottom-color:var(--cyan)}
+.pane{flex:1;overflow:auto;padding:14px}
+.pane[hidden]{display:none}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:11px}
+.field label{font-size:12px;color:var(--muted);font-weight:600}
+.field input,.field select,.field textarea{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:9px;padding:8px 10px;min-height:36px;width:100%}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid rgba(34,211,238,.5);outline-offset:0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.check{display:flex;align-items:center;gap:8px;margin-bottom:11px;font-size:13px}
+.check input{width:18px;height:18px}
+h2{font-size:12px;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted);margin:4px 0 10px;font-weight:700}
+.muted{color:var(--muted);font-size:13px;line-height:1.5}
+.list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.item{display:flex;justify-content:space-between;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer;font-size:13px}
+.item.sel{border-color:rgba(34,211,238,.6);background:rgba(34,211,238,.1)}
+.item small{color:var(--muted)}
+textarea.code{font-family:ui-monospace,Consolas,monospace;font-size:12px;min-height:420px;white-space:pre;line-height:1.45}
+.warn{border:1px solid rgba(255,192,105,.4);background:rgba(255,192,105,.08);border-radius:10px;padding:9px 11px;font-size:13px;margin-bottom:10px;line-height:1.45}
+.ok{border-color:rgba(34,211,238,.4);background:rgba(34,211,238,.07)}
+.preview{position:fixed;inset:0;background:rgba(3,5,10,.92);z-index:50;display:flex;flex-direction:column;padding:16px;gap:10px;overflow:auto}
+.preview[hidden]{display:none}
+.preview .bar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.preview aurora-casa-viva{max-width:1200px;width:100%;margin:0 auto}
+.mobile-note{display:none}
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr;height:auto}
+  .stagecol{border-right:0}
+  .stage{height:62vh;flex:none}
+  .side{border-top:1px solid var(--line)}
+  .pane{overflow:visible}
+  .mobile-note{display:block;padding:9px 12px;font-size:13px;color:var(--amber);border-bottom:1px solid var(--line)}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <div class="logo" aria-hidden="true"></div>
+    <div>
+      <h1>Disegna la tua pianta</h1>
+      <p class="sub">Aurora Casa Viva · funziona nel browser, l'immagine non viene inviata a nessuno</p>
+    </div>
+  </div>
+  <div class="actions">
+    <label class="btn">Carica immagine<input type="file" id="imgIn" accept="image/*" hidden></label>
+    <button class="btn" id="saveP">Salva progetto</button>
+    <label class="btn">Apri progetto<input type="file" id="projIn" accept=".json,application/json" hidden></label>
+    <button class="btn" id="example">Esempio</button>
+    <button class="btn danger" id="reset">Ricomincia</button>
+    <button class="btn main" id="previewBtn">Anteprima animata</button>
+  </div>
+</header>
+<div class="mobile-note">Da telefono funziona, ma con mouse e tastiera si disegna molto meglio.</div>
+<main class="layout">
+  <section class="stagecol">
+    <div class="tools" id="tools" role="toolbar" aria-label="Strumenti"></div>
+    <div class="stage" id="stage">
+      <canvas id="cv" aria-label="Area di disegno della pianta"></canvas>
+      <div class="drop" id="drop"><b>Trascina qui la pianta di casa</b><span>Una foto, una scansione, un PNG o un SVG. Va bene anche uno schizzo.</span><label class="btn main">Scegli immagine<input type="file" id="imgIn2" accept="image/*" hidden></label><span>Oppure inizia sulla griglia vuota con lo strumento Stanza.</span></div>
+      <div class="zoom"><button class="btn" id="zin" aria-label="Ingrandisci">+</button><button class="btn" id="zout" aria-label="Rimpicciolisci">−</button><button class="btn" id="zfit">Adatta</button></div>
+    </div>
+    <div class="hint" id="hint"></div>
+  </section>
+  <aside class="side">
+    <div class="tabs" role="tablist">
+      <button role="tab" data-tab="props" aria-selected="true">Elemento</button>
+      <button role="tab" data-tab="house" aria-selected="false">Casa</button>
+      <button role="tab" data-tab="list" aria-selected="false">Elenco</button>
+      <button role="tab" data-tab="code" aria-selected="false">Codice</button>
+    </div>
+    <div class="pane" id="props"></div>
+    <div class="pane" id="house" hidden></div>
+    <div class="pane" id="list" hidden></div>
+    <div class="pane" id="code" hidden>
+      <div id="checks"></div>
+      <div class="actions" style="margin-bottom:10px"><button class="btn main" id="copy">Copia la scheda</button><button class="btn" id="dl">Scarica .yaml</button></div>
+      <div class="field"><label for="yaml">Configurazione da incollare nella plancia</label><textarea id="yaml" class="code" readonly spellcheck="false"></textarea></div>
+    </div>
+  </aside>
+</main>
+<div class="preview" id="preview" hidden>
+  <div class="bar"><b>Anteprima con dati finti</b><span class="muted">Le entità non esistono ancora: la giornata è simulata per vedere come si muove la tua casa.</span><button class="btn main" id="closePrev">Torna all'editor</button></div>
+  <div id="prevHost"></div>
+</div>
+
+<script>window.AURORA_CASA_VIVA_FONTS = false;</script>
+<script src="aurora-casa-viva.js"></script>
+<script src="acv-demo.js"></script>
+<script src="esempio-config.js"></script>
+<script>
+'use strict';
+// ───────────────────────── stato del progetto ─────────────────────────
+const SNAP = 8;
+const TOOLS = [
+  ['select', 'Seleziona', 'Clicca un elemento per modificarlo. Trascina gli angoli di una stanza o l\'intero elemento. Trascina il vuoto per spostare la vista. <b>Canc</b> elimina.'],
+  ['room', 'Stanza', 'Clicca gli angoli della stanza uno dopo l\'altro. Tieni <b>Maiusc</b> per muri dritti. Chiudi cliccando il primo punto, con <b>Invio</b> o con un doppio clic. <b>Esc</b> annulla.'],
+  ['window', 'Finestra', 'Clicca i due estremi della finestra sul muro esterno: il lato fuori viene trovato da solo. Va bene anche per le porte-finestre.'],
+  ['door', 'Ingresso', 'Clicca il cardine della porta d\'ingresso, poi l\'altro estremo. La porta si aprirà verso l\'interno.'],
+  ['pass', 'Passaggio', 'Clicca dove si passa tra due stanze (una porta interna). Serve per la scia di presenza. Prova prima <b>Passaggi automatici</b> nella scheda Casa.'],
+  ['device', 'Apparecchio', 'Clicca dove sta un apparecchio con presa smart (forno, lavatrice…). L\'energia scorrerà dal quadro fin lì.'],
+  ['media', 'Altoparlante', 'Clicca dove sta un Echo, una TV o una cassa: quando suona partono le onde.'],
+  ['panel', 'Quadro', 'Clicca dove sta il quadro elettrico: è il punto da cui parte l\'energia.'],
+  ['radar', 'Radar', 'Clicca dove è montato il radar, poi clicca nella direzione in cui guarda.'],
+  ['camera', 'Telecamera', 'Clicca dove è la telecamera, poi nella direzione in cui guarda.'],
+  ['scale', 'Scala', 'Clicca due punti di cui conosci la distanza (per esempio una parete), poi scrivi i metri nella scheda Elemento.'],
+];
+let P = blank(), tool = 'select', sel = null, draft = null, view = { s: 1, ox: 0, oy: 0 }, img = null, drag = null, hover = null;
+function blank() { return { v: 1, image: null, W: 800, H: 800, rooms: [], openings: [], door: null, doors: [], devices: [], media: [], radars: [], cameras: [], panel: null, scale: null, settings: { north: 0, ppm: 56, tariff: 0.30, weather: 'weather.casa', alarm: '', power_total: '', waste_entity: '', waste_attr: '', waste_from: '20:00', bell_image: '', bell_type: '', bell_camera: '', fonts: true } }; }
+
+// ───────────────────────── geometria ─────────────────────────
+const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+const r1 = v => Math.round(v);
+function centroid(pts) { let a = 0, x = 0, y = 0; for (let i = 0; i < pts.length; i++) { const p = pts[i], q = pts[(i + 1) % pts.length], c = p[0] * q[1] - q[0] * p[1]; a += c; x += (p[0] + q[0]) * c; y += (p[1] + q[1]) * c; } a /= 2; return a ? [x / (6 * a), y / (6 * a)] : pts[0]; }
+function inPoly(pt, pts) { let c = false; for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) { const a = pts[i], b = pts[j]; if (((a[1] > pt[1]) !== (b[1] > pt[1])) && (pt[0] < (b[0] - a[0]) * (pt[1] - a[1]) / (b[1] - a[1]) + a[0])) c = !c; } return c; }
+function bbox(pts) { const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]); return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)]; }
+function segDist(p, a, b) { const dx = b[0] - a[0], dy = b[1] - a[1], l = dx * dx + dy * dy; let t = l ? ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / l : 0; t = Math.max(0, Math.min(1, t)); return dist(p, [a[0] + t * dx, a[1] + t * dy]); }
+function polyDist(p, pts) { let m = 1e9; for (let i = 0; i < pts.length; i++) m = Math.min(m, segDist(p, pts[i], pts[(i + 1) % pts.length])); return inPoly(p, pts) ? 0 : m; }
+function roomAt(p) { for (let i = P.rooms.length - 1; i >= 0; i--) if (inPoly(p, P.rooms[i].pts)) return P.rooms[i]; return null; }
+function nearestRoom(p) { let best = null, bd = 1e9; for (const r of P.rooms) { const d = polyDist(p, r.pts); if (d < bd) { bd = d; best = r; } } return best; }
+// punto "comodo" per l'etichetta: il baricentro, oppure il centro della riga più larga se il baricentro cade fuori
+function labelPoint(pts) {
+  const c = centroid(pts); if (inPoly(c, pts)) return c;
+  const [x0, y0, x1, y1] = bbox(pts); let best = c, bw = 0;
+  for (let y = y0 + 4; y < y1; y += 4) { const xs = []; for (let i = 0; i < pts.length; i++) { const a = pts[i], b = pts[(i + 1) % pts.length]; if ((a[1] > y) !== (b[1] > y)) xs.push(a[0] + (y - a[1]) * (b[0] - a[0]) / (b[1] - a[1])); } xs.sort((m, n) => m - n); for (let k = 0; k + 1 < xs.length; k += 2) if (xs[k + 1] - xs[k] > bw) { bw = xs[k + 1] - xs[k]; best = [(xs[k] + xs[k + 1]) / 2, y]; } }
+  return best;
+}
+function slug(s, used) { let b = (s || 'stanza').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'stanza', k = b, i = 2; while (used.has(k)) k = b + '_' + i++; used.add(k); return k; }
+
+// ───────────────────────── canvas ─────────────────────────
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d'), stage = document.getElementById('stage');
+let DPR = 1, CW = 0, CH = 0;
+function resize() { const r = stage.getBoundingClientRect(); CW = r.width; CH = r.height; DPR = Math.min(2, devicePixelRatio || 1); cv.width = CW * DPR; cv.height = CH * DPR; draw(); }
+function fit() { if (CW < 80 || CH < 80) return; const m = 30, s = Math.min((CW - 2 * m) / P.W, (CH - 2 * m) / P.H); view = { s, ox: (CW - P.W * s) / 2, oy: (CH - P.H * s) / 2 }; draw(); }
+const toW = (x, y) => [(x - view.ox) / view.s, (y - view.oy) / view.s];
+const tol = () => 10 / view.s;
+function snap(p, prev, shift) {
+  let q = [Math.round(p[0] / SNAP) * SNAP, Math.round(p[1] / SNAP) * SNAP];
+  if (!document.getElementById('snapG')?.checked) q = [r1(p[0]), r1(p[1])];
+  // aggancio ai vertici esistenti
+  let bd = tol() * 1.2; for (const r of P.rooms) for (const v of r.pts) { const d = dist(p, v); if (d < bd) { bd = d; q = v.slice(); } }
+  if (shift && prev) { if (Math.abs(q[0] - prev[0]) > Math.abs(q[1] - prev[1])) q[1] = prev[1]; else q[0] = prev[0]; }
+  return q;
+}
+const COLORS = ['#7C6CF5', '#22D3EE', '#FFC069', '#4ADE80', '#F472B6', '#60A5FA', '#FB923C', '#A78BFA', '#34D399', '#F87171'];
+function draw() {
+  if (!(view.s > 0) || !CW) return;
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height);
+  ctx.setTransform(DPR * view.s, 0, 0, DPR * view.s, DPR * view.ox, DPR * view.oy);
+  const px = v => v / view.s;
+  // griglia e immagine
+  ctx.fillStyle = '#0b1120'; ctx.fillRect(0, 0, P.W, P.H);
+  if (img) { ctx.globalAlpha = .55; ctx.drawImage(img, 0, 0, P.W, P.H); ctx.globalAlpha = 1; }
+  ctx.strokeStyle = 'rgba(255,255,255,.05)'; ctx.lineWidth = px(1); ctx.beginPath();
+  for (let x = 0; x <= P.W; x += 40) { ctx.moveTo(x, 0); ctx.lineTo(x, P.H); } for (let y = 0; y <= P.H; y += 40) { ctx.moveTo(0, y); ctx.lineTo(P.W, y); } ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.strokeRect(0, 0, P.W, P.H);
+  // stanze
+  P.rooms.forEach((r, i) => {
+    const col = COLORS[i % COLORS.length], isSel = sel && sel.kind === 'room' && sel.obj === r;
+    ctx.beginPath(); r.pts.forEach((p, k) => k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath();
+    ctx.fillStyle = col + (r.outdoor ? '22' : '38'); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = px(isSel ? 3 : 2); if (r.outdoor) ctx.setLineDash([px(6), px(5)]); ctx.stroke(); ctx.setLineDash([]);
+    const lp = labelPoint(r.pts); ctx.font = `700 ${px(13)}px Manrope, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.strokeStyle = 'rgba(5,8,15,.85)'; ctx.lineWidth = px(3.5); ctx.strokeText(r.name.toUpperCase(), lp[0], lp[1]); ctx.fillStyle = '#E8ECF8'; ctx.fillText(r.name.toUpperCase(), lp[0], lp[1]);
+    if (isSel) for (const v of r.pts) { ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(v[0], v[1], px(5), 0, 7); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = px(2); ctx.stroke(); }
+  });
+  const ring = (p, col, on) => { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(p[0], p[1], px(on ? 8 : 6), 0, 7); ctx.fill(); ctx.strokeStyle = on ? '#fff' : 'rgba(5,8,15,.9)'; ctx.lineWidth = px(2); ctx.stroke(); };
+  const isS = (k, o) => sel && sel.kind === k && sel.obj === o;
+  for (const o of P.openings) { ctx.strokeStyle = isS('window', o) ? '#fff' : '#FFC069'; ctx.lineWidth = px(6); ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(...o.from); ctx.lineTo(...o.to); ctx.stroke(); const m = [(o.from[0] + o.to[0]) / 2, (o.from[1] + o.to[1]) / 2]; ctx.strokeStyle = 'rgba(255,192,105,.7)'; ctx.lineWidth = px(2); ctx.beginPath(); ctx.moveTo(...m); ctx.lineTo(m[0] + o.outside[0] * px(18), m[1] + o.outside[1] * px(18)); ctx.stroke(); }
+  if (P.door) { const d = P.door; ctx.strokeStyle = isS('door', d) ? '#fff' : '#22D3EE'; ctx.lineWidth = px(6); ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(...d.hinge); ctx.lineTo(...d.end); ctx.stroke(); ring(d.hinge, '#22D3EE', isS('door', d)); }
+  for (const d of P.doors) ring(d.at, '#4ADE80', isS('pass', d));
+  for (const d of P.devices) ring(d.at, '#FB923C', isS('device', d));
+  for (const d of P.media) ring(d.at, '#B9A6FF', isS('media', d));
+  if (P.panel) ring(P.panel.at, '#60A5FA', isS('panel', P.panel));
+  const cone = (o, col, len, fov, k) => { const a = o.angle * Math.PI / 180, h = fov / 2 * Math.PI / 180; ctx.fillStyle = col + '30'; ctx.beginPath(); ctx.moveTo(...o.at); ctx.arc(o.at[0], o.at[1], len, a - h, a + h); ctx.closePath(); ctx.fill(); ring(o.at, col, isS(k, o)); };
+  for (const r of P.radars) cone(r, '#22D3EE', (r.type === 'ld2450' ? 6 : 5) * P.settings.ppm, r.type === 'ld2450' ? 120 : 140, 'radar');
+  for (const c of P.cameras) cone(c, '#A78BFA', c.range || 300, c.fov || 50, 'camera');
+  if (P.scale) { ctx.strokeStyle = '#F472B6'; ctx.lineWidth = px(2); ctx.setLineDash([px(5), px(4)]); ctx.beginPath(); ctx.moveTo(...P.scale.a); ctx.lineTo(...P.scale.b); ctx.stroke(); ctx.setLineDash([]); }
+  // bozza in corso
+  if (draft) {
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = px(2); ctx.setLineDash([px(6), px(4)]); ctx.beginPath();
+    draft.pts.forEach((p, k) => k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); if (hover) ctx.lineTo(hover[0], hover[1]); ctx.stroke(); ctx.setLineDash([]);
+    draft.pts.forEach((p, k) => { ctx.fillStyle = k === 0 ? '#22D3EE' : '#fff'; ctx.beginPath(); ctx.arc(p[0], p[1], px(k === 0 ? 7 : 4), 0, 7); ctx.fill(); });
+  }
+  if (hover && tool !== 'select') { ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = px(1.5); ctx.beginPath(); ctx.arc(hover[0], hover[1], px(6), 0, 7); ctx.stroke(); }
+  // nord
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0); const cx = CW - 40, cy = 40, a = -P.settings.north * Math.PI / 180;
+  ctx.strokeStyle = 'rgba(255,255,255,.3)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cx, cy, 20, 0, 7); ctx.stroke();
+  ctx.fillStyle = '#FF8A95'; ctx.beginPath(); ctx.moveTo(cx + Math.sin(a) * 18, cy - Math.cos(a) * 18); ctx.lineTo(cx + Math.cos(a) * 6, cy + Math.sin(a) * 6); ctx.lineTo(cx - Math.cos(a) * 6, cy - Math.sin(a) * 6); ctx.fill();
+  ctx.fillStyle = '#E8ECF8'; ctx.font = '700 12px Sora, sans-serif'; ctx.textAlign = 'center'; ctx.fillText('N', cx + Math.sin(a) * 30, cy - Math.cos(a) * 30 + 4);
+}
+
+// ───────────────────────── interazione ─────────────────────────
+function setTool(t) { tool = t; draft = null; document.querySelectorAll('.tool').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === t)); document.getElementById('hint').innerHTML = TOOLS.find(x => x[0] === t)[2]; draw(); }
+const toolbar = document.getElementById('tools');
+for (const [t, name] of TOOLS) { const b = document.createElement('button'); b.className = 'tool'; b.dataset.t = t; b.textContent = name; b.onclick = () => setTool(t); toolbar.appendChild(b); }
+const snapLbl = document.createElement('label'); snapLbl.className = 'check'; snapLbl.style.margin = '0 0 0 6px'; snapLbl.innerHTML = '<input type="checkbox" id="snapG" checked> Aggancia alla griglia'; toolbar.appendChild(snapLbl);
+
+function pick(p) {
+  const t = tol() * 1.4, pts = [];
+  if (sel && sel.kind === 'room') sel.obj.pts.forEach((v, i) => { if (dist(p, v) < t) pts.push({ kind: 'vertex', obj: sel.obj, i }); });
+  if (pts.length) return pts[0];
+  const near = (q) => dist(p, q) < t;
+  for (const o of P.openings) if (segDist(p, o.from, o.to) < t) return { kind: 'window', obj: o };
+  if (P.door && (segDist(p, P.door.hinge, P.door.end) < t)) return { kind: 'door', obj: P.door };
+  for (const d of P.doors) if (near(d.at)) return { kind: 'pass', obj: d };
+  for (const d of P.devices) if (near(d.at)) return { kind: 'device', obj: d };
+  for (const d of P.media) if (near(d.at)) return { kind: 'media', obj: d };
+  for (const d of P.radars) if (near(d.at)) return { kind: 'radar', obj: d };
+  for (const d of P.cameras) if (near(d.at)) return { kind: 'camera', obj: d };
+  if (P.panel && near(P.panel.at)) return { kind: 'panel', obj: P.panel };
+  const r = roomAt(p); if (r) return { kind: 'room', obj: r };
+  return null;
+}
+function closeRoom() {
+  if (!draft || draft.pts.length < 3) return;
+  const n = P.rooms.length + 1, r = { name: 'Stanza ' + n, pts: draft.pts, outdoor: false, light: '', motion: '', temperature: '', short: '', facing: 180 };
+  P.rooms.push(r); draft = null; select({ kind: 'room', obj: r }); changed(); setTimeout(() => { const f = document.getElementById('f_name'); if (f) { f.focus(); f.select(); } }, 30);
+}
+function addWindow(a, b) {
+  if (dist(a, b) < 6) return;
+  const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], L = dist(a, b), n = [-(b[1] - a[1]) / L, (b[0] - a[0]) / L], e = 8;
+  const r1 = roomAt([m[0] + n[0] * e, m[1] + n[1] * e]), r2 = roomAt([m[0] - n[0] * e, m[1] - n[1] * e]);
+  let room, out;
+  if (r1 && !r2) { room = r1; out = [-n[0], -n[1]]; } else if (r2 && !r1) { room = r2; out = n; }
+  else if (r1 && r2) { if (r1.outdoor !== r2.outdoor) { room = r1.outdoor ? r2 : r1; out = r1.outdoor ? n : [-n[0], -n[1]]; } else { toast('Questo è un muro tra due stanze: per una porta interna usa Passaggio.'); return; } }
+  else { room = nearestRoom(m); if (!room) { toast('Disegna prima le stanze, poi le finestre.'); return; } const c = centroid(room.pts); out = ((m[0] - c[0]) * n[0] + (m[1] - c[1]) * n[1]) > 0 ? n : [-n[0], -n[1]]; }
+  const o = { room, from: a, to: b, outside: [+out[0].toFixed(3), +out[1].toFixed(3)], name: 'Finestra ' + room.name.toLowerCase(), entity: '', sill: 0.9, top: 2.2 };
+  P.openings.push(o); select({ kind: 'window', obj: o }); changed();
+}
+function addDoor(a, b) {
+  if (dist(a, b) < 6) return;
+  const ang = Math.atan2(b[1] - a[1], b[0] - a[0]), L = dist(a, b);
+  const test = sg => { const t = ang + sg * Math.PI / 4; const p = [a[0] + Math.cos(t) * L * .7, a[1] + Math.sin(t) * L * .7]; const r = roomAt(p); return r && !r.outdoor; };
+  const swing = test(1) ? 'cw' : test(-1) ? 'ccw' : 'cw';
+  P.door = { hinge: a, end: b, entity: '', label: 'ENTRATA', swing };
+  // passaggio verso fuori, al centro della porta
+  const m = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], inside = roomAt([m[0] + Math.cos(ang + (swing === 'cw' ? 1 : -1) * Math.PI / 2) * 10, m[1] + Math.sin(ang + (swing === 'cw' ? 1 : -1) * Math.PI / 2) * 10]) || nearestRoom(m);
+  P.doors = P.doors.filter(d => !d.rooms.includes('fuori'));
+  if (inside) P.doors.push({ rooms: [inside, 'fuori'], at: m });
+  select({ kind: 'door', obj: P.door }); changed();
+}
+function addPass(p) {
+  const rs = P.rooms.map(r => [r, polyDist(p, r.pts)]).filter(x => x[1] < 18).sort((m, n) => m[1] - n[1]).map(x => x[0]);
+  if (!rs.length) { toast('Clicca vicino al muro tra due stanze.'); return; }
+  const d = { rooms: [rs[0], rs[1] || 'fuori'], at: p }; P.doors.push(d); select({ kind: 'pass', obj: d }); changed();
+}
+function autoPasses() {
+  let n = 0;
+  for (let i = 0; i < P.rooms.length; i++) for (let j = i + 1; j < P.rooms.length; j++) {
+    const A = P.rooms[i], B = P.rooms[j]; if (P.doors.some(d => d.rooms.includes(A) && d.rooms.includes(B))) continue;
+    let best = null;
+    for (let a = 0; a < A.pts.length; a++) for (let b = 0; b < B.pts.length; b++) {
+      const p1 = A.pts[a], p2 = A.pts[(a + 1) % A.pts.length], q1 = B.pts[b], q2 = B.pts[(b + 1) % B.pts.length];
+      const hA = Math.abs(p1[1] - p2[1]) < 1, hB = Math.abs(q1[1] - q2[1]) < 1, vA = Math.abs(p1[0] - p2[0]) < 1, vB = Math.abs(q1[0] - q2[0]) < 1;
+      if (hA && hB && Math.abs(p1[1] - q1[1]) <= 20) { const lo = Math.max(Math.min(p1[0], p2[0]), Math.min(q1[0], q2[0])), hi = Math.min(Math.max(p1[0], p2[0]), Math.max(q1[0], q2[0])); if (hi - lo > 30 && (!best || hi - lo > best.len)) best = { len: hi - lo, at: [r1((lo + hi) / 2), r1((p1[1] + q1[1]) / 2)] }; }
+      if (vA && vB && Math.abs(p1[0] - q1[0]) <= 20) { const lo = Math.max(Math.min(p1[1], p2[1]), Math.min(q1[1], q2[1])), hi = Math.min(Math.max(p1[1], p2[1]), Math.max(q1[1], q2[1])); if (hi - lo > 30 && (!best || hi - lo > best.len)) best = { len: hi - lo, at: [r1((p1[0] + q1[0]) / 2), r1((lo + hi) / 2)] }; }
+    }
+    if (best) { P.doors.push({ rooms: [A, B], at: best.at }); n++; }
+  }
+  changed(); toast(n ? `Aggiunti ${n} passaggi: controlla che siano dove ci sono davvero le porte, sposta o elimina quelli sbagliati.` : 'Nessun muro in comune trovato. Aggiungi i passaggi a mano.');
+}
+function addPoint(kind, p) {
+  const room = roomAt(p) || nearestRoom(p); if (!room) { toast('Disegna prima le stanze.'); return; }
+  let o;
+  if (kind === 'device') { o = { room, at: p, entity: '', name: 'Apparecchio' }; P.devices.push(o); }
+  if (kind === 'media') { o = { room, at: p, entity: '' }; P.media.push(o); }
+  if (kind === 'panel') { o = P.panel = { room, at: p }; }
+  select({ kind, obj: o }); changed();
+}
+
+let downAt = null;
+const at = ev => { const r = cv.getBoundingClientRect(); return [ev.clientX - r.left, ev.clientY - r.top]; };
+cv.addEventListener('pointerdown', ev => {
+  try { cv.setPointerCapture(ev.pointerId); } catch (e) { /* evento senza puntatore attivo */ }
+  const [ex, ey] = at(ev);
+  const p = toW(ex, ey); downAt = [ex, ey];
+  if (tool === 'select') {
+    const h = pick(p);
+    if (h && h.kind === 'vertex') drag = { kind: 'vertex', obj: h.obj, i: h.i };
+    else if (h) { select(h); drag = { kind: 'move', h, last: p }; }
+    else { select(null); drag = { kind: 'pan', sx: ex, sy: ey, ox: view.ox, oy: view.oy }; }
+    return;
+  }
+  const q = snap(p, draft && draft.pts[draft.pts.length - 1], ev.shiftKey);
+  if (tool === 'room') {
+    if (!draft) draft = { pts: [q] };
+    else if (draft.pts.length >= 3 && dist(q, draft.pts[0]) < tol() * 1.5) closeRoom();
+    else if (!draft.pts.length || dist(q, draft.pts[draft.pts.length - 1]) > 1) draft.pts.push(q);
+  } else if (['window', 'door', 'scale', 'radar', 'camera'].includes(tool)) {
+    if (!draft) draft = { pts: [q] };
+    else {
+      const a = draft.pts[0]; draft = null;
+      if (tool === 'window') addWindow(a, q);
+      if (tool === 'door') addDoor(a, q);
+      if (tool === 'scale') { P.scale = { a, b: q, m: '' }; select({ kind: 'scale', obj: P.scale }); setTimeout(() => document.getElementById('f_m')?.focus(), 30); }
+      if (tool === 'radar' || tool === 'camera') {
+        const room = roomAt(a) || nearestRoom(a); if (!room) { toast('Disegna prima le stanze.'); draw(); return; }
+        const angle = Math.round(Math.atan2(q[1] - a[1], q[0] - a[0]) * 180 / Math.PI);
+        let o; if (tool === 'radar') { o = { type: 'ld2450', room, at: a, angle, flip: false, name: 'Radar ' + room.name.toLowerCase(), prefix: '', presence: '', moving: '', still: '', move_distance: '', still_distance: '' }; P.radars.push(o); }
+        else { o = { room, at: a, angle, fov: 50, range: 300, entity: '', name: 'Telecamera ' + room.name.toLowerCase() }; P.cameras.push(o); }
+        select({ kind: tool, obj: o }); changed();
+      }
+    }
+  } else if (tool === 'pass') addPass(q);
+  else if (['device', 'media', 'panel'].includes(tool)) addPoint(tool, q);
+  draw();
+});
+cv.addEventListener('pointermove', ev => {
+  const [ex, ey] = at(ev);
+  const p = toW(ex, ey);
+  if (drag) {
+    if (drag.kind === 'pan') { view.ox = drag.ox + ex - drag.sx; view.oy = drag.oy + ey - drag.sy; }
+    else if (drag.kind === 'vertex') { drag.obj.pts[drag.i] = snap(p, null, false); changed(true); }
+    else if (drag.kind === 'move') {
+      const q = snap(p, null, false), dx = q[0] - snap(drag.last, null, false)[0], dy = q[1] - snap(drag.last, null, false)[1];
+      if (dx || dy) { moveObj(drag.h, dx, dy); drag.last = p; changed(true); }
+    }
+    draw(); return;
+  }
+  hover = tool === 'select' ? null : snap(p, draft && draft.pts[draft.pts.length - 1], ev.shiftKey); draw();
+});
+cv.addEventListener('pointerup', () => { if (drag && drag.kind !== 'pan') changed(); drag = null; });
+cv.addEventListener('dblclick', () => { if (tool === 'room' && draft) { draft.pts.pop(); closeRoom(); } });
+cv.addEventListener('wheel', ev => { ev.preventDefault(); const [ex, ey] = at(ev); zoomAt(ex, ey, ev.deltaY < 0 ? 1.15 : 1 / 1.15); }, { passive: false });
+function zoomAt(x, y, f) { const w = toW(x, y); view.s *= f; view.ox = x - w[0] * view.s; view.oy = y - w[1] * view.s; draw(); }
+document.getElementById('zin').onclick = () => zoomAt(CW / 2, CH / 2, 1.25);
+document.getElementById('zout').onclick = () => zoomAt(CW / 2, CH / 2, 1 / 1.25);
+document.getElementById('zfit').onclick = fit;
+function moveObj(h, dx, dy) {
+  const mv = p => { p[0] += dx; p[1] += dy; };
+  if (h.kind === 'room') h.obj.pts.forEach(mv);
+  else if (h.kind === 'window') { mv(h.obj.from); mv(h.obj.to); }
+  else if (h.kind === 'door') { mv(h.obj.hinge); mv(h.obj.end); }
+  else if (h.obj.at) mv(h.obj.at);
+}
+addEventListener('keydown', ev => {
+  if (/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName)) return;
+  if (ev.key === 'Escape') { draft = null; draw(); }
+  if (ev.key === 'Enter' && tool === 'room') closeRoom();
+  if ((ev.key === 'Delete' || ev.key === 'Backspace') && sel) { ev.preventDefault(); removeSel(); }
+});
+function removeSel() {
+  if (!sel) return; const o = sel.obj, k = sel.kind;
+  if (k === 'room') { P.rooms = P.rooms.filter(r => r !== o); P.openings = P.openings.filter(x => x.room !== o); P.doors = P.doors.filter(d => !d.rooms.includes(o)); P.devices = P.devices.filter(x => x.room !== o); P.media = P.media.filter(x => x.room !== o); P.radars = P.radars.filter(x => x.room !== o); P.cameras = P.cameras.filter(x => x.room !== o); if (P.panel?.room === o) P.panel = null; }
+  if (k === 'window') P.openings = P.openings.filter(x => x !== o);
+  if (k === 'door') { P.door = null; P.doors = P.doors.filter(d => !d.rooms.includes('fuori')); }
+  if (k === 'pass') P.doors = P.doors.filter(x => x !== o);
+  if (k === 'device') P.devices = P.devices.filter(x => x !== o);
+  if (k === 'media') P.media = P.media.filter(x => x !== o);
+  if (k === 'radar') P.radars = P.radars.filter(x => x !== o);
+  if (k === 'camera') P.cameras = P.cameras.filter(x => x !== o);
+  if (k === 'panel') P.panel = null;
+  if (k === 'scale') P.scale = null;
+  select(null); changed();
+}
+
+// ───────────────────────── pannelli ─────────────────────────
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function fld(id, label, val, ph = '', type = 'text') { return `<div class="field"><label for="${id}">${label}</label><input id="${id}" type="${type}" value="${esc(val)}" placeholder="${esc(ph)}" ${type === 'number' ? 'step="any"' : ''}></div>`; }
+function roomSelect(id, label, val) { return `<div class="field"><label for="${id}">${label}</label><select id="${id}">${P.rooms.map((r, i) => `<option value="${i}" ${r === val ? 'selected' : ''}>${esc(r.name)}</option>`).join('')}</select></div>`; }
+function bind(id, fn) { const e = document.getElementById(id); if (e) e.addEventListener('input', () => { fn(e.type === 'checkbox' ? e.checked : e.value); changed(true); draw(); }); }
+function select(s) { sel = s; renderProps(); renderList(); draw(); if (s) showTab('props'); }
+function renderProps() {
+  const el = document.getElementById('props');
+  if (!sel) { el.innerHTML = `<h2>Come si fa</h2><p class="muted">1. Carica la pianta (o disegna sulla griglia).<br>2. Con <b>Scala</b> indica una misura nota: serve per la luce del sole e i radar.<br>3. Disegna le <b>Stanze</b>, poi <b>Finestre</b> e <b>Ingresso</b>.<br>4. Nella scheda <b>Casa</b> premi <b>Passaggi automatici</b> e scegli il nord.<br>5. Clicca ogni elemento e scrivi le entità di Home Assistant.<br>6. Copia il risultato dalla scheda <b>Codice</b>.</p><p class="muted">Non sai il nome di un'entità? In Home Assistant vai in Impostazioni → Dispositivi e servizi → Entità e cerca la stanza: il nome è quello tipo <code>light.cucina</code>.</p>`; return; }
+  const o = sel.obj, k = sel.kind; let h = '';
+  const del = '<button class="btn danger" id="del" style="margin-top:4px">Elimina</button>';
+  if (k === 'room' || k === 'vertex') {
+    const r = k === 'vertex' ? sel.obj : o;
+    h = `<h2>Stanza</h2>${fld('f_name', 'Nome', r.name)}${fld('f_short', 'Nome corto (schermi stretti, facoltativo)', r.short, 'es. Bagno p.')}
+      ${fld('f_light', 'Luce (una o più, separate da virgola)', r.light, 'light.cucina')}
+      ${fld('f_motion', 'Sensori di movimento o presenza (separati da virgola)', r.motion, 'binary_sensor.cucina_movimento')}
+      ${fld('f_temp', 'Temperatura (facoltativo)', r.temperature, 'sensor.cucina_temperatura')}
+      <label class="check"><input type="checkbox" id="f_out" ${r.outdoor ? 'checked' : ''}> All'aperto (balcone, terrazzo, giardino)</label>
+      ${r.outdoor ? `<div class="field"><label for="f_face">Lato aperto verso</label><select id="f_face">${[[0, 'nord'], [90, 'est'], [180, 'sud'], [270, 'ovest']].map(([v, n]) => `<option value="${v}" ${+r.facing === v ? 'selected' : ''}>${n}</option>`).join('')}</select></div>` : ''}${del}`;
+    el.innerHTML = h;
+    bind('f_name', v => r.name = v); bind('f_short', v => r.short = v); bind('f_light', v => r.light = v); bind('f_motion', v => r.motion = v); bind('f_temp', v => r.temperature = v);
+    bind('f_out', v => { r.outdoor = v; renderProps(); }); bind('f_face', v => r.facing = +v);
+  } else if (k === 'window') {
+    h = `<h2>Finestra</h2>${fld('f_name', 'Nome', o.name)}${fld('f_ent', 'Sensore di apertura (facoltativo)', o.entity, 'binary_sensor.finestra_cucina')}
+      ${roomSelect('f_room', 'Stanza', o.room)}<div class="row2">${fld('f_sill', 'Davanzale (m)', o.sill, '', 'number')}${fld('f_top', 'Altezza in alto (m)', o.top, '', 'number')}</div>
+      <p class="muted">Per una porta-finestra il davanzale è 0. Il trattino arancione indica il lato esterno: se è sbagliato premi Inverti.</p><button class="btn" id="flip">Inverti il lato esterno</button> ${del}`;
+    el.innerHTML = h; bind('f_name', v => o.name = v); bind('f_ent', v => o.entity = v); bind('f_room', v => o.room = P.rooms[+v]); bind('f_sill', v => o.sill = +v); bind('f_top', v => o.top = +v);
+    document.getElementById('flip').onclick = () => { o.outside = [-o.outside[0], -o.outside[1]]; changed(); draw(); };
+  } else if (k === 'door') {
+    h = `<h2>Porta d'ingresso</h2>${fld('f_ent', 'Sensore della porta (facoltativo)', o.entity, 'binary_sensor.porta_ingresso')}${fld('f_lbl', 'Scritta', o.label)}
+      <p class="muted">Se nell'anteprima la porta si apre verso fuori, premi Inverti.</p><button class="btn" id="flip">Inverti l'apertura</button> ${del}`;
+    el.innerHTML = h; bind('f_ent', v => o.entity = v); bind('f_lbl', v => o.label = v);
+    document.getElementById('flip').onclick = () => { o.swing = o.swing === 'cw' ? 'ccw' : 'cw'; changed(); };
+  } else if (k === 'pass') {
+    const opts = (v) => P.rooms.map((r, i) => `<option value="${i}" ${r === v ? 'selected' : ''}>${esc(r.name)}</option>`).join('');
+    h = `<h2>Passaggio</h2><div class="field"><label for="f_a">Da</label><select id="f_a">${opts(o.rooms[0])}</select></div><div class="field"><label for="f_b">A</label><select id="f_b"><option value="fuori" ${o.rooms[1] === 'fuori' ? 'selected' : ''}>Fuori casa</option>${opts(o.rooms[1])}</select></div>${del}`;
+    el.innerHTML = h; bind('f_a', v => o.rooms[0] = P.rooms[+v]); bind('f_b', v => o.rooms[1] = v === 'fuori' ? 'fuori' : P.rooms[+v]);
+  } else if (k === 'device') {
+    h = `<h2>Apparecchio</h2>${fld('f_name', 'Nome', o.name)}${fld('f_ent', 'Sensore di potenza in watt', o.entity, 'sensor.forno_potenza')}${roomSelect('f_room', 'Stanza', o.room)}${del}`;
+    el.innerHTML = h; bind('f_name', v => o.name = v); bind('f_ent', v => o.entity = v); bind('f_room', v => o.room = P.rooms[+v]);
+  } else if (k === 'media') {
+    h = `<h2>Altoparlante o TV</h2>${fld('f_ent', 'Lettore multimediale', o.entity, 'media_player.echo_cucina')}${roomSelect('f_room', 'Stanza', o.room)}${del}`;
+    el.innerHTML = h; bind('f_ent', v => o.entity = v); bind('f_room', v => o.room = P.rooms[+v]);
+  } else if (k === 'panel') {
+    h = `<h2>Quadro elettrico</h2><p class="muted">Da qui parte l'animazione dell'energia verso gli apparecchi.</p>${roomSelect('f_room', 'Stanza', o.room)}${del}`;
+    el.innerHTML = h; bind('f_room', v => o.room = P.rooms[+v]);
+  } else if (k === 'radar') {
+    h = `<h2>Radar di presenza</h2>${fld('f_name', 'Nome', o.name)}<div class="field"><label for="f_type">Tipo</label><select id="f_type"><option value="ld2450" ${o.type === 'ld2450' ? 'selected' : ''}>LD2450 (posizione delle persone, es. Apollo MTR-1)</option><option value="ld2410" ${o.type === 'ld2410' ? 'selected' : ''}>LD2410 (distanza, es. Apollo MSR-2)</option></select></div>
+      ${fld('f_pres', 'Presenza', o.presence, 'binary_sensor.radar_presenza')}
+      ${o.type === 'ld2450' ? `${fld('f_pre', 'Prefisso dei sensori target', o.prefix, 'sensor.apollo_mtr_1_xxxxxx')}<p class="muted">Il prefisso è la parte prima di <code>_target_1_x</code>.</p><label class="check"><input type="checkbox" id="f_flip" ${o.flip ? 'checked' : ''}> Destra e sinistra invertite</label>`
+        : `${fld('f_mv', 'Bersaglio in movimento', o.moving, 'binary_sensor.radar_moving_target')}${fld('f_st', 'Bersaglio fermo', o.still, 'binary_sensor.radar_still_target')}${fld('f_md', 'Distanza in movimento (cm)', o.move_distance, 'sensor.radar_moving_distance')}${fld('f_sd', 'Distanza da fermo (cm)', o.still_distance, 'sensor.radar_still_distance')}`}
+      ${fld('f_ang', 'Direzione (gradi: 0 destra, 90 giù, 180 sinistra, 270 su)', o.angle, '', 'number')}${roomSelect('f_room', 'Stanza', o.room)}${del}`;
+    el.innerHTML = h; bind('f_name', v => o.name = v); bind('f_type', v => { o.type = v; renderProps(); }); bind('f_pres', v => o.presence = v); bind('f_pre', v => o.prefix = v.replace(/_target.*$/, ''));
+    bind('f_flip', v => o.flip = v); bind('f_mv', v => o.moving = v); bind('f_st', v => o.still = v); bind('f_md', v => o.move_distance = v); bind('f_sd', v => o.still_distance = v); bind('f_ang', v => o.angle = +v); bind('f_room', v => o.room = P.rooms[+v]);
+  } else if (k === 'camera') {
+    h = `<h2>Telecamera</h2>${fld('f_name', 'Nome', o.name)}${fld('f_ent', 'Sensore di movimento della telecamera', o.entity, 'binary_sensor.telecamera_movimento')}<div class="row2">${fld('f_fov', 'Apertura (gradi)', o.fov, '', 'number')}${fld('f_rng', 'Lunghezza del cono', o.range, '', 'number')}</div>${fld('f_ang', 'Direzione (gradi)', o.angle, '', 'number')}${roomSelect('f_room', 'Stanza', o.room)}${del}`;
+    el.innerHTML = h; bind('f_name', v => o.name = v); bind('f_ent', v => o.entity = v); bind('f_fov', v => o.fov = +v); bind('f_rng', v => o.range = +v); bind('f_ang', v => o.angle = +v); bind('f_room', v => o.room = P.rooms[+v]);
+  } else if (k === 'scale') {
+    const len = dist(o.a, o.b);
+    h = `<h2>Scala</h2><p class="muted">Il segmento rosa è lungo ${Math.round(len)} punti. Quanti metri misura davvero?</p>${fld('f_m', 'Metri', o.m, 'es. 4,20')}<div id="scaleRes" class="muted"></div>${del}`;
+    el.innerHTML = h;
+    bind('f_m', v => { o.m = v; const m = parseFloat(String(v).replace(',', '.')); if (m > 0) { P.settings.ppm = +(len / m).toFixed(2); document.getElementById('scaleRes').textContent = `Scala: ${P.settings.ppm} punti per metro.`; } });
+  }
+  const d = document.getElementById('del'); if (d) d.onclick = removeSel;
+}
+function renderHouse() {
+  const S = P.settings, el = document.getElementById('house');
+  el.innerHTML = `<h2>Orientamento e misure</h2>
+    <div class="field"><label for="h_north">Nord: di quanti gradi è ruotato rispetto all'alto del disegno (${S.north}°)</label><input id="h_north" type="range" min="0" max="359" value="${S.north}"></div>
+    <p class="muted">Controllo veloce: la mattina il sole deve entrare dalle finestre a est. Se nella tua pianta il nord è in alto lascia 0.</p>
+    ${fld('h_ppm', 'Punti per metro (lo calcola lo strumento Scala)', S.ppm, '', 'number')}
+    <button class="btn" id="h_auto" style="margin-bottom:14px">Passaggi automatici</button>
+    <h2>Entità generali (facoltative)</h2>
+    ${fld('h_weather', 'Meteo', S.weather, 'weather.casa')}${fld('h_alarm', 'Allarme', S.alarm, 'alarm_control_panel.allarme')}
+    ${fld('h_tot', 'Potenza totale della casa (W)', S.power_total, 'sensor.potenza_casa')}${fld('h_tar', 'Tariffa (€/kWh)', S.tariff, '', 'number')}
+    <h2>Raccolta differenziata (facoltativa)</h2>
+    ${fld('h_we', 'Sensore con i rifiuti da portare fuori stasera', S.waste_entity, 'sensor.rifiuti_stasera')}${fld('h_wa', 'Attributo con l\'elenco (se il sensore ha una lista)', S.waste_attr, 'lista')}${fld('h_wf', 'Promemoria (i bidoni compaiono 2 ore prima)', S.waste_from, '20:00')}
+    <h2>Spioncino o campanello (facoltativo)</h2>
+    ${fld('h_bi', 'Immagine dell\'ultimo evento', S.bell_image, 'image.spioncino_ultima_immagine')}${fld('h_bt', 'Sensore del tipo di evento', S.bell_type, 'sensor.spioncino_ultimo_evento')}${fld('h_bc', 'Telecamera da aprire toccando la foto', S.bell_camera, 'camera.spioncino')}
+    <h2>Privacy</h2><label class="check"><input type="checkbox" id="h_fonts" ${S.fonts ? 'checked' : ''}> Usa i font Google (Manrope e Sora). Se lo togli la scheda non fa nessuna richiesta esterna.</label>`;
+  bind('h_north', v => { S.north = +v; renderHouse(); }); bind('h_ppm', v => S.ppm = +v); bind('h_weather', v => S.weather = v); bind('h_alarm', v => S.alarm = v); bind('h_tot', v => S.power_total = v); bind('h_tar', v => S.tariff = +v);
+  bind('h_we', v => S.waste_entity = v); bind('h_wa', v => S.waste_attr = v); bind('h_wf', v => S.waste_from = v); bind('h_bi', v => S.bell_image = v); bind('h_bt', v => S.bell_type = v); bind('h_bc', v => S.bell_camera = v); bind('h_fonts', v => S.fonts = v);
+  document.getElementById('h_auto').onclick = autoPasses;
+}
+function renderList() {
+  const el = document.getElementById('list'), it = [];
+  const add = (kind, obj, label, sub) => it.push(`<div class="item ${sel && sel.obj === obj ? 'sel' : ''}" data-k="${kind}" data-i="${it.length}"><span>${esc(label)}</span><small>${esc(sub || '')}</small></div>`);
+  const refs = [];
+  const push = (kind, obj, label, sub) => { refs.push({ kind, obj }); add(kind, obj, label, sub); };
+  P.rooms.forEach(r => push('room', r, r.name, r.outdoor ? 'all\'aperto' : 'stanza'));
+  P.openings.forEach(o => push('window', o, o.name, o.entity || 'senza sensore'));
+  if (P.door) push('door', P.door, 'Porta d\'ingresso', P.door.entity || 'senza sensore');
+  P.doors.forEach(d => push('pass', d, 'Passaggio', d.rooms.map(r => r === 'fuori' ? 'fuori' : r.name).join(' ↔ ')));
+  P.devices.forEach(d => push('device', d, d.name, d.entity));
+  P.media.forEach(d => push('media', d, 'Altoparlante', d.entity));
+  P.radars.forEach(d => push('radar', d, d.name, d.type));
+  P.cameras.forEach(d => push('camera', d, d.name, d.entity));
+  if (P.panel) push('panel', P.panel, 'Quadro elettrico', P.panel.room.name);
+  el.innerHTML = it.length ? `<div class="list">${it.join('')}</div>` : '<p class="muted">Ancora niente: comincia con lo strumento Stanza.</p>';
+  el.querySelectorAll('.item').forEach(n => n.onclick = () => select(refs[+n.dataset.i]));
+}
+function showTab(t) { document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t)); ['props', 'house', 'list', 'code'].forEach(id => document.getElementById(id).hidden = id !== t); if (t === 'code') renderCode(); if (t === 'house') renderHouse(); if (t === 'list') renderList(); }
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => showTab(b.dataset.tab));
+
+// ───────────────────────── configurazione della scheda ─────────────────────────
+const list = s => String(s || '').split(',').map(x => x.trim()).filter(Boolean);
+const one = a => a.length === 1 ? a[0] : a;
+function buildConfig() {
+  const S = P.settings, used = new Set(), ids = new Map();
+  P.rooms.forEach(r => ids.set(r, slug(r.name, used)));
+  const id = r => r === 'fuori' ? 'fuori' : ids.get(r);
+  const c = { type: 'custom:aurora-casa-viva', north: S.north, px_per_meter: S.ppm, tariff: S.tariff };
+  if (!S.fonts) c.fonts = false;
+  if (S.weather) c.weather = S.weather; if (S.alarm) c.alarm = S.alarm; if (S.power_total) c.power_total = S.power_total;
+  c.tap_action = 'toggle';
+  c.rooms = {};
+  for (const r of P.rooms) {
+    const [x0, y0, x1, y1] = bbox(r.pts), w = x1 - x0, h = y1 - y0, lp = labelPoint(r.pts).map(r1);
+    const o = { name: r.name }; if (r.short) o.short = r.short;
+    o.points = r.pts.map(p => `${r1(p[0])} ${r1(p[1])}`).join(',');
+    o.label = lp; o.node = lp;
+    if (h > w * 2.2) o.rotate_label = true;
+    // stanze lunghe e strette (corridoi): un percorso lungo l'asse, così la scia non taglia i muri
+    if (Math.max(w, h) > Math.min(w, h) * 2.2 && Math.max(w, h) > 160) {
+      const n = Math.max(3, Math.round(Math.max(w, h) / 90)), walk = [];
+      for (let i = 0; i < n; i++) { const t = (i + .5) / n; walk.push(w > h ? [r1(x0 + w * t), r1(lp[1])] : [r1(lp[0]), r1(y0 + h * t)]); }
+      o.walk = walk;
+    }
+    if (r.outdoor) { o.outdoor = true; o.facing = +r.facing; }
+    if (list(r.light).length) o.light = one(list(r.light));
+    if (list(r.motion).length) o.motion = one(list(r.motion));
+    if (r.temperature) o.temperature = r.temperature.trim();
+    c.rooms[id(r)] = o;
+  }
+  if (P.doors.length) c.doors = P.doors.filter(d => d.rooms.every(x => x === 'fuori' || P.rooms.includes(x))).map(d => ({ rooms: d.rooms.map(id), at: d.at.map(r1) }));
+  const outPass = P.doors.find(d => d.rooms.includes('fuori'));
+  if (outPass && P.door) { const a = Math.atan2(P.door.end[1] - P.door.hinge[1], P.door.end[0] - P.door.hinge[0]) + (P.door.swing === 'cw' ? -1 : 1) * Math.PI / 2; c.outside_point = [r1(outPass.at[0] + Math.cos(a) * 50), r1(outPass.at[1] + Math.sin(a) * 50)]; }
+  if (P.openings.length) c.openings = P.openings.map((o, i) => ({ entity: o.entity || `binary_sensor.finestra_${i + 1}`, name: o.name, room: id(o.room), from: o.from.map(r1), to: o.to.map(r1), outside: o.outside, sill: +o.sill, top: +o.top }));
+  if (P.door) { const d = P.door; c.door = { entity: d.entity || 'binary_sensor.porta_ingresso', hinge: d.hinge.map(r1), length: r1(dist(d.hinge, d.end)), angle: 85, closed_angle: Math.round(Math.atan2(d.end[1] - d.hinge[1], d.end[0] - d.hinge[0]) * 180 / Math.PI), swing: d.swing, label: d.label || 'ENTRATA' }; }
+  if (P.panel) c.panel = { room: id(P.panel.room), at: P.panel.at.map(r1) };
+  if (P.devices.length) c.devices = P.devices.map((d, i) => ({ entity: d.entity || `sensor.apparecchio_${i + 1}_potenza`, name: d.name, room: id(d.room), at: d.at.map(r1) }));
+  if (P.media.length) c.media = P.media.map((d, i) => ({ entity: d.entity || `media_player.altoparlante_${i + 1}`, room: id(d.room), at: d.at.map(r1) }));
+  if (P.cameras.length) c.cameras = P.cameras.map((d, i) => ({ entity: d.entity || `binary_sensor.telecamera_${i + 1}_movimento`, name: d.name, room: id(d.room), at: d.at.map(r1), angle: d.angle, fov: d.fov, range: d.range }));
+  if (P.radars.length) c.radars = P.radars.map((d, i) => {
+    const o = { type: d.type, name: d.name, room: id(d.room), at: d.at.map(r1), angle: d.angle };
+    if (d.presence) o.presence = d.presence;
+    if (d.type === 'ld2450') { o.flip = !!d.flip; o.prefix = d.prefix || `sensor.radar_${i + 1}`; o.range_mm = 6000; }
+    else { if (d.moving) o.moving = d.moving; if (d.still) o.still = d.still; if (d.move_distance) o.move_distance = d.move_distance; if (d.still_distance) o.still_distance = d.still_distance; o.max_cm = 500; }
+    return o;
+  });
+  if (S.waste_entity) { c.waste = { entity: S.waste_entity, from_time: S.waste_from || '20:00', lead_min: 120 }; if (S.waste_attr) c.waste.attribute = S.waste_attr; }
+  if (S.bell_image) { c.doorbell = { image: S.bell_image, show_seconds: 90 }; if (S.bell_type) c.doorbell.event_type = S.bell_type; if (S.bell_camera) c.doorbell.camera = S.bell_camera; if (P.door) c.doorbell.at = [r1((P.door.hinge[0] + P.door.end[0]) / 2), r1((P.door.hinge[1] + P.door.end[1]) / 2)]; }
+  return c;
+}
+// YAML leggibile, senza librerie
+function yaml(v, ind = 0) {
+  const pad = ' '.repeat(ind), q = s => /^[A-Za-z0-9_.\-/]+$/.test(s) && !/^(true|false|null|yes|no|on|off|\d.*)$/i.test(s) ? s : JSON.stringify(s);
+  const scalar = x => typeof x === 'string' ? q(x) : typeof x === 'number' ? String(+x.toFixed(3)) : String(x);
+  const inline = a => a.every(x => typeof x !== 'object') && a.length <= 3 && a.every(x => typeof x === 'number' || String(x).length < 30);
+  if (Array.isArray(v)) {
+    if (inline(v)) return '[' + v.map(scalar).join(', ') + ']';
+    return '\n' + v.map(x => {
+      if (Array.isArray(x)) return pad + '- ' + yaml(x, ind + 2);
+      if (x && typeof x === 'object') { const body = yaml(x, ind + 2).replace(/^\n/, ''); return pad + '- ' + body.slice(ind + 2); }
+      return pad + '- ' + scalar(x);
+    }).join('\n');
+  }
+  if (v && typeof v === 'object') {
+    return (ind ? '\n' : '') + Object.entries(v).map(([k, x]) => {
+      if (x && typeof x === 'object' && !(Array.isArray(x) && inline(x))) return pad + q(k) + ':' + yaml(x, ind + 2);
+      return pad + q(k) + ': ' + (Array.isArray(x) ? yaml(x) : scalar(x));
+    }).join('\n');
+  }
+  return scalar(v);
+}
+function checks(c) {
+  const out = [];
+  if (!P.rooms.length) out.push('Disegna almeno una stanza.');
+  if (!P.scale) out.push('Usa lo strumento <b>Scala</b>: senza una misura vera la luce del sole e i radar sono approssimati.');
+  if (P.rooms.length > 1 && !P.doors.filter(d => !d.rooms.includes('fuori')).length) out.push('Mancano i <b>passaggi</b> tra le stanze: premi <b>Passaggi automatici</b> nella scheda Casa.');
+  if (!P.openings.length) out.push('Nessuna <b>finestra</b>: senza finestre il sole non entra.');
+  const noEnt = P.rooms.filter(r => !r.outdoor && !list(r.light).length && !list(r.motion).length).map(r => r.name);
+  if (noEnt.length) out.push('Stanze senza luce né movimento: ' + noEnt.map(esc).join(', ') + '. Funzionano lo stesso, ma restano spente.');
+  const ph = P.openings.filter(o => !o.entity).length + P.devices.filter(d => !d.entity).length + P.media.filter(d => !d.entity).length;
+  if (ph) out.push(`${ph} elementi hanno un'entità di esempio da sostituire (le trovi nel codice con il nome che inizia per <code>finestra_</code>, <code>apparecchio_</code> o <code>altoparlante_</code>).`);
+  return out;
+}
+function renderCode() {
+  const c = buildConfig(), y = '# Aurora Casa Viva · creato con l\'editor di domotikpro.it\n' + yaml(c) + '\n';
+  document.getElementById('yaml').value = y;
+  const ch = checks(c);
+  document.getElementById('checks').innerHTML = ch.length ? ch.map(x => `<div class="warn">${x}</div>`).join('') : '<div class="warn ok">Tutto a posto: copia la scheda e incollala nella plancia.</div>';
+}
+document.getElementById('copy').onclick = async () => { renderCode(); const t = document.getElementById('yaml').value; try { await navigator.clipboard.writeText(t); toast('Copiata. In Home Assistant: modifica la plancia → aggiungi scheda → Manuale → incolla.'); } catch { document.getElementById('yaml').select(); toast('Seleziona il testo e copialo con Ctrl+C.'); } };
+document.getElementById('dl').onclick = () => { renderCode(); save('aurora-casa-viva.yaml', document.getElementById('yaml').value, 'text/yaml'); };
+
+// ───────────────────────── salvataggi ─────────────────────────
+function serial() {
+  const ri = r => r === 'fuori' ? 'fuori' : P.rooms.indexOf(r);
+  return JSON.stringify({ ...P, image: P.image, rooms: P.rooms, openings: P.openings.map(o => ({ ...o, room: ri(o.room) })), doors: P.doors.map(d => ({ ...d, rooms: d.rooms.map(ri) })), devices: P.devices.map(o => ({ ...o, room: ri(o.room) })), media: P.media.map(o => ({ ...o, room: ri(o.room) })), radars: P.radars.map(o => ({ ...o, room: ri(o.room) })), cameras: P.cameras.map(o => ({ ...o, room: ri(o.room) })), panel: P.panel ? { ...P.panel, room: ri(P.panel.room) } : null });
+}
+function load(json) {
+  const d = typeof json === 'string' ? JSON.parse(json) : json, n = blank();
+  Object.assign(n, d); n.settings = { ...blank().settings, ...(d.settings || {}) };
+  const R = i => i === 'fuori' ? 'fuori' : n.rooms[i];
+  n.openings = (d.openings || []).map(o => ({ ...o, room: R(o.room) })); n.doors = (d.doors || []).map(x => ({ ...x, rooms: x.rooms.map(R) }));
+  ['devices', 'media', 'radars', 'cameras'].forEach(k => n[k] = (d[k] || []).map(o => ({ ...o, room: R(o.room) })));
+  n.panel = d.panel ? { ...d.panel, room: R(d.panel.room) } : null;
+  P = n; sel = null; draft = null; setImage(P.image, false); renderHouse(); renderList(); renderProps(); fit();
+}
+let saveT = null;
+function changed(soft) { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem('acv-editor', serial()); } catch (e) { /* spazio pieno o modalità privata: niente salvataggio automatico */ } }, 400); if (!soft) { renderList(); if (!document.getElementById('code').hidden) renderCode(); } document.getElementById('drop').hidden = !!(P.image || P.rooms.length); }
+function save(name, text, type) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 30000); }
+document.getElementById('saveP').onclick = () => save('pianta-aurora-casa-viva.json', serial(), 'application/json');
+document.getElementById('projIn').onchange = ev => { const f = ev.target.files[0]; if (!f) return; f.text().then(t => { try { load(t); toast('Progetto aperto.'); } catch { toast('Questo file non è un progetto dell\'editor.'); } }); ev.target.value = ''; };
+document.getElementById('reset').onclick = () => { if (confirm('Cancellare la pianta e ricominciare da zero?')) { P = blank(); img = null; sel = null; draft = null; changed(); renderHouse(); renderProps(); fit(); } };
+
+// ───────────────────────── immagine ─────────────────────────
+function setImage(src, rescale = true) {
+  if (!src) { img = null; draw(); return; }
+  const im = new Image();
+  im.onload = () => {
+    img = im;
+    if (rescale) { const k = 800 / Math.max(im.naturalWidth, im.naturalHeight); P.W = Math.round(im.naturalWidth * k); P.H = Math.round(im.naturalHeight * k); }
+    changed(); fit();
+  };
+  im.src = src;
+}
+function readImage(file) {
+  if (!file || !/^image\//.test(file.type)) { toast('Serve un\'immagine (JPG, PNG, WebP o SVG).'); return; }
+  const fr = new FileReader();
+  fr.onload = () => {
+    // le immagini grandi vengono ridotte, così il progetto resta leggero
+    const im = new Image(); im.onload = () => {
+      const k = Math.min(1, 1600 / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas'); c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); P.image = c.toDataURL('image/jpeg', .82);
+      if (P.rooms.length && !confirm('Hai già disegnato delle stanze. Tenerle sulla nuova immagine?')) { const s = P.settings; P = blank(); P.settings = s; P.image = c.toDataURL('image/jpeg', .82); }
+      setImage(P.image, true); toast('Immagine caricata. Ora indica una misura con Scala e disegna le stanze.'); setTool('scale');
+    }; im.src = fr.result;
+  };
+  fr.readAsDataURL(file);
+}
+document.getElementById('imgIn').onchange = ev => { readImage(ev.target.files[0]); ev.target.value = ''; };
+document.getElementById('imgIn2').onchange = ev => { readImage(ev.target.files[0]); ev.target.value = ''; };
+stage.addEventListener('dragover', ev => { ev.preventDefault(); });
+stage.addEventListener('drop', ev => { ev.preventDefault(); readImage(ev.dataTransfer.files[0]); });
+
+// ───────────────────────── esempio e anteprima ─────────────────────────
+document.getElementById('example').onclick = async () => {
+  if (P.rooms.length && !confirm('Sostituire la pianta attuale con quella di esempio?')) return;
+  const cfg = JSON.parse(JSON.stringify(window.ACV_EXAMPLE || await fetch('esempio-config.json').then(r => r.json())));
+  const n = blank(); n.W = 840; n.H = 820; n.settings.ppm = cfg.px_per_meter; n.settings.weather = cfg.weather; n.settings.alarm = cfg.alarm; n.settings.power_total = cfg.power_total; n.scale = { a: [40, 790], b: [400, 790], m: '6,4' };
+  const map = {};
+  for (const [k, r] of Object.entries(cfg.rooms)) { const room = { name: r.name, short: r.short || '', pts: r.points.split(',').map(p => p.trim().split(/\s+/).map(Number)), outdoor: !!r.outdoor, facing: r.facing ?? 180, light: [].concat(r.light || []).join(', '), motion: [].concat(r.motion || []).join(', '), temperature: r.temperature || '' }; map[k] = room; n.rooms.push(room); }
+  n.openings = cfg.openings.map(o => ({ room: map[o.room], from: o.from, to: o.to, outside: { left: [-1, 0], right: [1, 0], up: [0, -1], down: [0, 1] }[o.outside] || o.outside, name: o.name, entity: o.entity, sill: o.sill, top: o.top }));
+  const dh = cfg.door, ca = (dh.closed_angle || 0) * Math.PI / 180; n.door = { hinge: dh.hinge, end: [Math.round(dh.hinge[0] + Math.cos(ca) * dh.length), Math.round(dh.hinge[1] + Math.sin(ca) * dh.length)], entity: dh.entity, label: dh.label, swing: 'cw' };
+  n.doors = cfg.doors.map(d => ({ rooms: d.rooms.map(x => x === 'fuori' ? 'fuori' : map[x]), at: d.at }));
+  n.devices = cfg.devices.map(d => ({ ...d, room: map[d.room] })); n.media = cfg.media.map(d => ({ ...d, room: map[d.room] }));
+  n.cameras = cfg.cameras.map(d => ({ ...d, room: map[d.room] })); n.radars = cfg.radars.map(d => ({ ...d, room: map[d.room] })); n.panel = { room: map[cfg.panel.room], at: cfg.panel.at };
+  P = n; img = null; sel = null; changed(); renderHouse(); renderProps(); fit(); toast('Ecco la casa di esempio: prova l\'anteprima animata.');
+};
+let prevDemo = null, prevTimer = null;
+document.getElementById('previewBtn').onclick = () => {
+  if (!P.rooms.length) { toast('Disegna almeno una stanza.'); return; }
+  const cfg = buildConfig(); cfg.fonts = false;
+  const host = document.getElementById('prevHost'); host.innerHTML = '';
+  const card = document.createElement('aurora-casa-viva'); host.appendChild(card);
+  try { card.setConfig(cfg); } catch (e) { toast(e.message); return; }
+  prevDemo = AuroraCasaVivaDemo.createHass(cfg); card.hass = prevDemo.hass; prevDemo.onUpdate(h => { card.hass = h; }); clearInterval(prevTimer); prevTimer = prevDemo.start(2000);
+  document.getElementById('preview').hidden = false;
+  const go = () => { if (!card._built || !card._pres) return setTimeout(go, 300); const d = new Date(); d.setHours(6, 30, 0, 0); if (d > new Date()) d.setDate(d.getDate() - 1); card._goReplay(); card._T = d.getTime(); card._speed = 600; card._playing = true; card._syncBtns(); };
+  setTimeout(go, 900);
+};
+document.getElementById('closePrev').onclick = () => { document.getElementById('preview').hidden = true; clearInterval(prevTimer); document.getElementById('prevHost').innerHTML = ''; };
+
+let toastT = null;
+function toast(msg) { const h = document.getElementById('hint'); h.innerHTML = '<b>' + esc(msg) + '</b>'; clearTimeout(toastT); toastT = setTimeout(() => setTool(tool), 6000); }
+
+// avvio
+let fitted = false;
+new ResizeObserver(() => { resize(); if (!fitted && CW > 80) { fitted = true; fit(); } }).observe(stage);
+try { const s = localStorage.getItem('acv-editor'); if (s) load(s); } catch (e) { /* nessun salvataggio precedente */ }
+setTool('select'); renderHouse(); renderProps(); changed(true);
+</script>
+</body>
+</html>
