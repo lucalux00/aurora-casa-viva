@@ -8,14 +8,14 @@
  *  - scia di presenza tra le stanze (il percorso, non la posizione esatta);
  *  - energia che scorre dal quadro agli apparecchi, aria dalle finestre aperte, suoni,
  *    telecamera, allarme, pioggia e nuvole;
- *  - radar di presenza, mappa di calore, consumi per stanza, raccolta differenziata,
+ *  - radar di presenza (con le zone dell MTR-1 disegnate), mappa di calore, consumi per stanza, raccolta differenziata,
  *    spioncino con foto, tocco sulle stanze e Short verticale registrato con un pulsante.
  * Un solo file, nessuna compilazione, nessun cloud. L'unica richiesta esterna sono i font Google
  * (con fonts: false nessuna).
  * Copyright (c) 2026 DomotikPro.it (Luca Pinelli). Uso personale gratuito: vedi LICENSE.
  * Guida: https://domotikpro.it/progetti/aurora-casa-viva
  */
-const ACV_VERSION = '1.5.3';
+const ACV_VERSION = '1.5.6';
 
 (() => {
   if (customElements.get('aurora-casa-viva')) return;
@@ -188,7 +188,12 @@ const ACV_VERSION = '1.5.3';
       if (c.doorbell) [c.doorbell.image, c.doorbell.event_type].forEach(e => e && ents.add(e));
       for (const r of this._radars) {
         [r.presence, r.moving, r.still, r.move_distance, r.still_distance].forEach(e => e && ents.add(e));
-        if (r.type === 'ld2450') for (let i = 1; i <= 3; i++) { ents.add(`${r.prefix}_target_${i}_x`); ents.add(`${r.prefix}_target_${i}_y`); }
+        if (r.type === 'ld2450') for (let i = 1; i <= 3; i++) {
+          ents.add(`${r.prefix}_target_${i}_x`); ents.add(`${r.prefix}_target_${i}_y`);
+          // zone del radar: coordinate (number.*) e persone dentro la zona
+          const nb = r.prefix.replace(/^sensor\./, 'number.');
+          ['x1', 'y1', 'x2', 'y2'].forEach(k => ents.add(`${nb}_zone_${i}_${k}`)); ents.add(`${r.prefix}_zone_${i}_all_target_count`);
+        }
       }
       this._ents = [...ents];
       this._motionRoom = {}; for (const r of Object.values(rooms)) r.motion.forEach(e => this._motionRoom[e] = r.id);
@@ -419,6 +424,15 @@ const ACV_VERSION = '1.5.3';
           const x = parseFloat(this._at(`${r.prefix}_target_${i}_x`, T)), y = parseFloat(this._at(`${r.prefix}_target_${i}_y`, T));
           return isFinite(x) && isFinite(y) && !(x === 0 && y === 0) && Math.hypot(x, y) <= r.range ? this._ldPos(r, x, y) : null;
         });
+        if (r.type === 'ld2450') {
+          const nb = r.prefix.replace(/^sensor\./, 'number.');
+          o.z = [1, 2, 3].map(i => {
+            const [x1, y1, x2, y2] = ['x1', 'y1', 'x2', 'y2'].map(k => parseFloat(this._hass?.states[`${nb}_zone_${i}_${k}`]?.state));
+            if (![x1, y1, x2, y2].every(isFinite) || (x1 === x2 && y1 === y2)) return null;
+            const n = parseFloat(this._at(`${r.prefix}_zone_${i}_all_target_count`, T));
+            return { i, pts: [[x1, y1], [x2, y1], [x2, y2], [x1, y2]].map(([x, y]) => this._ldPos(r, x, y)), n: isFinite(n) ? n : 0 };
+          }).filter(Boolean);
+        }
         else { o.mv = this._at(r.moving, T) === 'on'; o.st = this._at(r.still, T) === 'on'; o.md = parseFloat(this._at(r.move_distance, T)); o.sd = parseFloat(this._at(r.still_distance, T)); }
         return o;
       });
@@ -757,8 +771,9 @@ const ACV_VERSION = '1.5.3';
     }
     _ldPos(r, x, y) {
       // stessa formula di casa-radar: x laterale (flip = positivo a sinistra), y in avanti, in millimetri
-      const A = r.angle * RAD, fx = Math.cos(A), fy = Math.sin(A), sg = r.flip ? -1 : 1, k = r.ppm / 1000;
-      return [r.at[0] + (y * fx + sg * x * -fy) * k, r.at[1] + (y * fy + sg * x * fx) * k];
+      // ppm_side: scala del lato (X) diversa da quella in avanti (Y), per piantine non in scala
+      const A = r.angle * RAD, fx = Math.cos(A), fy = Math.sin(A), sg = r.flip ? -1 : 1, k = r.ppm / 1000, ks = (r.ppm_side ?? r.ppm) / 1000;
+      return [r.at[0] + (y * k * fx + sg * x * ks * -fy), r.at[1] + (y * k * fy + sg * x * ks * fx)];
     }
     _drawRadars(st) {
       const ctx = this._ctx, rt = this._rt, px = v => this._px(v), COLS = [[255, 180, 84], [94, 225, 255], [183, 140, 255]];
@@ -772,6 +787,15 @@ const ACV_VERSION = '1.5.3';
           ctx.strokeStyle = rgba(col, .2); ctx.lineWidth = 1; ctx.setLineDash([3, 5]);
           for (let m = 1; m * 1000 <= r.range; m++) { ctx.beginPath(); ctx.arc(at[0], at[1], m * r.ppm, A - half, A + half); ctx.stroke(); }
           ctx.setLineDash([]);
+          // zone disegnate nel radar: tratteggio, piene quando c'è qualcuno dentro
+          (s.z || []).forEach(z => {
+            const busy = z.n > 0; ctx.beginPath(); z.pts.forEach((p, j) => j ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath();
+            ctx.fillStyle = busy ? `rgba(255,180,84,${(.30 + .10 * Math.sin(rt * 3)).toFixed(3)})` : 'rgba(255,180,84,.12)'; ctx.fill();
+            ctx.strokeStyle = busy ? 'rgba(255,190,100,1)' : 'rgba(255,180,84,.8)'; ctx.lineWidth = busy ? px(2.4) : px(1.6); ctx.setLineDash(busy ? [] : [px(6), px(4)]); ctx.stroke(); ctx.setLineDash([]);
+            const cx = z.pts.reduce((a, p) => a + p[0], 0) / 4, cy = z.pts.reduce((a, p) => a + p[1], 0) / 4;
+            ctx.fillStyle = busy ? 'rgba(255,214,150,1)' : 'rgba(255,214,150,.7)'; ctx.font = `600 ${Math.round(px(10))}px Sora, Manrope, sans-serif`; ctx.textAlign = 'center';
+            ctx.fillText((r.zone_names && r.zone_names[z.i - 1]) || 'Zona ' + z.i, cx, cy + px(4));
+          });
           const sw = A + Math.sin(rt * .9) * half, ex = at[0] + Math.cos(sw) * len, ey = at[1] + Math.sin(sw) * len;
           const lg = ctx.createLinearGradient(at[0], at[1], ex, ey); lg.addColorStop(0, rgba(col, .7)); lg.addColorStop(1, rgba(col, 0));
           ctx.strokeStyle = lg; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(at[0], at[1]); ctx.lineTo(ex, ey); ctx.stroke();

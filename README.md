@@ -17,7 +17,7 @@ Draw your floor plan in the browser and Home Assistant brings it to life: sunlig
 ## Features
 - **Real sunlight:** sun azimuth and elevation from your Home Assistant location; beams go through each window, with sill height, top height and clouds
 - **Time machine:** the last 24 hours from the recorder, by dragging a slider or as a fast replay
-- **Presence trail** between rooms; with LD2450 radars (e.g. Apollo MTR-1) people are shown where they actually are, with LD2410 radars (e.g. Apollo MSR-2) as distance rings
+- **Presence trail** between rooms; with LD2450 radars (e.g. Apollo MTR-1) people are shown where they actually are, together with the radar zones (filled when someone is inside), with LD2410 radars (e.g. Apollo MSR-2) as distance rings
 - **Heat map** of where time was spent and **energy map** with kWh and cost per room
 - Energy flowing from the panel to appliances, sound waves, air from open windows, rain stopping at the walls, alarm, cameras
 - **Waste collection bins** in the evening and **doorbell/peephole** with the latest snapshot

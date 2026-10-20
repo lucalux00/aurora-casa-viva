@@ -72,7 +72,12 @@ OPZIONI UTILI
   doorbell      spioncino o campanello: image (immagine dell'ultimo evento),
                 event_type (tipo di evento), camera (si apre toccando la foto)
   radars        radar di presenza LD2450 (posizione delle persone, per
-                esempio Apollo MTR-1) o LD2410 (distanza, per esempio MSR-2)
+                esempio Apollo MTR-1) o LD2410 (distanza, per esempio MSR-2).
+                Per gli LD2450 la scheda disegna anche le zone del radar
+                (Zone-1/2/3 X1 Y1 X2 Y2) e le riempie quando qualcuno c'e'
+                dentro; zone_names: [Divano] da' loro un nome. Se la pianta
+                non e' in scala, ppm_side imposta per il lato del radar una
+                scala diversa da ppm (che vale per la distanza in avanti).
 
 PRIVACY
   Tutto funziona in locale. La scheda legge gli stati e lo storico delle

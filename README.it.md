@@ -17,7 +17,7 @@ Disegni la pianta di casa nel browser e Home Assistant la fa vivere: la luce del
 ## Cosa fa
 - **Luce del sole vera:** azimut e altezza del sole dalla posizione di Home Assistant; i fasci passano dalle finestre, con davanzale, altezza e nuvole
 - **Macchina del tempo:** le ultime 24 ore dallo storico, trascinando una barra o in replica accelerata
-- **Scia di presenza** tra le stanze; con i radar LD2450 (es. Apollo MTR-1) le persone dove sono davvero, con gli LD2410 (es. Apollo MSR-2) la distanza
+- **Scia di presenza** tra le stanze; con i radar LD2450 (es. Apollo MTR-1) le persone dove sono davvero e le zone del radar (piene quando c'è qualcuno dentro), con gli LD2410 (es. Apollo MSR-2) la distanza
 - **Mappa di calore** e **mappa dei consumi** con kWh ed euro per stanza
 - Energia che scorre dal quadro agli apparecchi, onde sonore, aria dalle finestre aperte, pioggia che si ferma sui muri, allarme, telecamere
 - **Bidoni della differenziata** la sera e **spioncino/campanello** con l'ultima foto
