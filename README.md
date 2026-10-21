@@ -41,6 +41,8 @@ The card is named `custom:aurora-casa-viva`. A complete example home is in [`aur
 Everything runs in your Home Assistant and your browser: no data is sent anywhere. The only external request is Google Fonts (Manrope, Sora); set `fonts: false` to remove it. The editor also works only in your browser: the floor plan image is never uploaded.
 
 ## License
-Free for personal use, no redistribution or modification without permission: see [LICENSE](LICENSE). You may freely link to the repository and the guide.
+[GPL-3.0](LICENSE). You can use, study, modify and share the card, also commercially, as long as every modified version you distribute stays under GPL-3.0, comes with its source code and keeps the original notice: © 2026 DomotikPro.it (Luca Pinelli).
+
+The name "Aurora Casa Viva" and the DomotikPro.it brand are not covered by the license: a modified version must use a different name.
 
 © 2026 [DomotikPro.it](https://domotikpro.it)

@@ -12,7 +12,7 @@ EDITOR ONLINE: https://domotikpro.it/aurora-casa-viva-editor/index.html
 
 CONTENUTO
   LEGGIMI.txt                               questo file
-  LICENSE.txt                               licenza d'uso
+  LICENSE.txt                               licenza GPL-3.0
   scheda-esempio.yaml                       una casa di esempio, completa
   www/aurora-casa-viva/aurora-casa-viva.js  la scheda (un solo file)
   editor/index.html                         l'editor "Disegna la tua pianta"
@@ -102,4 +102,4 @@ SE QUALCOSA NON VA
    e la scheda deve restare visibile mentre registra.
 
 Provata con Home Assistant 2026.10. Domande e suggerimenti: richieste@domotikpro.it
-(c) 2026 DomotikPro.it - vedi LICENSE.txt
+(c) 2026 DomotikPro.it (Luca Pinelli) - licenza GPL-3.0, vedi LICENSE.txt

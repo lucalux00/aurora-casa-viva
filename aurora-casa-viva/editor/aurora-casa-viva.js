@@ -12,7 +12,7 @@
  *    spioncino con foto, tocco sulle stanze e Short verticale registrato con un pulsante.
  * Un solo file, nessuna compilazione, nessun cloud. L'unica richiesta esterna sono i font Google
  * (con fonts: false nessuna).
- * Copyright (c) 2026 DomotikPro.it (Luca Pinelli). Uso personale gratuito: vedi LICENSE.
+ * Copyright (c) 2026 DomotikPro.it (Luca Pinelli). Licenza GPL-3.0: vedi LICENSE.
  * Guida: https://domotikpro.it/progetti/aurora-casa-viva
  */
 const ACV_VERSION = '1.5.6';
