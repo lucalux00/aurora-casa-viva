@@ -15,7 +15,7 @@
  * Copyright (c) 2026 DomotikPro.it (Luca Pinelli). Licenza GPL-3.0: vedi LICENSE.
  * Guida: https://domotikpro.it/progetti/aurora-casa-viva
  */
-const ACV_VERSION = '1.5.6';
+const ACV_VERSION = '1.5.7';
 
 (() => {
   if (customElements.get('aurora-casa-viva')) return;
