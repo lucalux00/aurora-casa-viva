@@ -23,10 +23,12 @@ Draw your floor plan in the browser and Home Assistant brings it to life: sunlig
 - **Waste collection bins** in the evening and **doorbell/peephole** with the latest snapshot
 - **Tap** a room to toggle its lights, **long-press** for details; unavailable sensors are flagged on the plan
 - **Vertical Short** (1080×1920) recorded with one button
-- One JavaScript file, no build step, no HACS, no cloud
+- One JavaScript file, no build step, HACS optional, no cloud
 
 ## Install
 The step-by-step version is in [`aurora-casa-viva/LEGGIMI.txt`](aurora-casa-viva/LEGGIMI.txt) (Italian). Short version:
+
+**With HACS (copies the card and adds the resource for you):** HACS → ⋮ → *Custom repositories* → add `https://github.com/lucalux00/aurora-casa-viva`, type *Dashboard* → search **Aurora Casa Viva** → *Download* → reload the browser, then do steps 1 and 4. Without HACS, follow all the steps.
 
 1. **Draw the floor plan** with the editor (online or [`aurora-casa-viva/editor/index.html`](aurora-casa-viva/editor/index.html), works offline) and copy the code from the *Codice* tab.
 2. **Copy the card:** put `aurora-casa-viva/www/aurora-casa-viva` into the `www` folder of your Home Assistant configuration.

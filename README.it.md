@@ -23,10 +23,12 @@ Disegni la pianta di casa nel browser e Home Assistant la fa vivere: la luce del
 - **Bidoni della differenziata** la sera e **spioncino/campanello** con l'ultima foto
 - **Tocco** su una stanza per la luce, **pressione lunga** per i dettagli; i sensori che non rispondono vengono segnalati
 - **Short verticale** 1080×1920 registrato con un pulsante
-- Un solo file JavaScript, nessuna compilazione, nessun HACS, nessun cloud
+- Un solo file JavaScript, nessuna compilazione, HACS facoltativo, nessun cloud
 
 ## Installazione
 La versione completa è in [`aurora-casa-viva/LEGGIMI.txt`](aurora-casa-viva/LEGGIMI.txt). In breve:
+
+**Con HACS (copia la scheda e aggiunge la risorsa da solo):** HACS → ⋮ → *Repository personalizzati* → aggiungi `https://github.com/lucalux00/aurora-casa-viva`, tipo *Dashboard* → cerca **Aurora Casa Viva** → *Scarica* → ricarica il browser, poi fai i punti 1 e 4. Senza HACS segui tutti i punti.
 
 1. **Disegna la pianta** con l'editor (online o [`aurora-casa-viva/editor/index.html`](aurora-casa-viva/editor/index.html), funziona anche senza internet) e copia il codice dalla scheda *Codice*.
 2. **Copia la scheda:** metti `aurora-casa-viva/www/aurora-casa-viva` nella cartella `www` di Home Assistant.
