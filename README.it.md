@@ -40,6 +40,14 @@ La scheda si chiama `custom:aurora-casa-viva`. Una casa completa di esempio è i
 ## Privacy
 Tutto avviene nella tua Home Assistant e nel tuo browser: nessun dato viene inviato. L'unica richiesta esterna sono i font Google (Manrope, Sora), che si tolgono con `fonts: false`. Anche l'editor lavora solo nel browser: l'immagine della pianta non viene caricata da nessuna parte.
 
+## Sostieni Aurora Casa Viva
+Aurora Casa Viva è gratis e resterà gratis. La sviluppo nel tempo libero e provo ogni versione sul mio Home Assistant. Se ti è utile:
+
+- ⭐ **Metti una stella a questo repository**: è gratis e aiuta altre persone a trovarlo.
+- ☕ **[Offrimi un caffè su Ko-fi](https://ko-fi.com/domotikpro)**: una volta sola o ogni mese, con carta o PayPal.
+
+I contributi sono volontari: Aurora Casa Viva è uguale per tutti.
+
 ## Licenza
 [GPL-3.0](LICENSE). Puoi usare, studiare, modificare e condividere la scheda, anche a scopo commerciale, purché ogni versione modificata che distribuisci resti GPL-3.0, sia accompagnata dal codice sorgente e mantenga la nota originale: © 2026 DomotikPro.it (Luca Pinelli).
 
